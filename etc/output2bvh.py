@@ -61,7 +61,7 @@ def compute_posture(raw_motion, root):
 
         # update root
         rotation = Quaternions.from_angle_axis(-root_r[i], np.array([0,1,0])) * rotation
-        translation = translation + rotation * np.array([root_x[i], 0, root_z[i]], dtype=np.float32)
+        translation = translation + rotation * np.array([root_x[i, 0], 0, root_z[i, 0]], dtype=np.float32)
         current_root[:, :3, 3] = translation
         current_root[:, 1, 3] = 0.0  # fix root height
         current_root[:, :3, :3] = rotation.transforms()

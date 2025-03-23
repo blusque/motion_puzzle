@@ -1,10 +1,10 @@
 import sys
 import os
 import numpy as np
-sys.path.append('../motion')
-from Quaternions import Quaternions
-from Animation import Animation
-import BVH as BVH
+sys.path.append('..')
+from motion.Quaternions import Quaternions
+from motion.Animation import Animation
+import motion.BVH as BVH
 
 def qfix(q):
     """

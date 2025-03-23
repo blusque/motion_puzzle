@@ -1,7 +1,7 @@
 import operator
 
 import numpy as np
-import numpy.core.umath_tests as ut
+# import numpy.core.umath_tests as ut
 
 from Quaternions import Quaternions
 
@@ -126,7 +126,7 @@ class Animation:
             self.offsets.ravel()])
         
     @classmethod
-    def unravel(clas, anim, shape, parents):
+    def unravel(cls, anim, shape, parents):
         nf, nj = shape
         rotations = anim[nf*nj*0:nf*nj*3]
         positions = anim[nf*nj*3:nf*nj*6]
@@ -195,7 +195,7 @@ def transforms_multiply(t0s, t1s):
         together
     """
     
-    return ut.matrix_multiply(t0s, t1s)
+    return t0s @ t1s
     
 def transforms_inv(ts):
     fts = ts.reshape(-1, 4, 4)

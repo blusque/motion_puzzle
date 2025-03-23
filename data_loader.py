@@ -124,11 +124,8 @@ def get_dataloader(subset_name, config, seed=None, shuffle=None, transform=None)
 
 
 if __name__ == '__main__':
-    import sys
     from etc.utils import print_composite
-    sys.path.append('./motion')
-    sys.path.append('./etc')
-    from viz_motion import animation_plot    # for checking dataloader
+    from etc.viz_motion import animation_plot    # for checking dataloader
     data_dir = './datasets/cmu/'
     
     batch_size = 2

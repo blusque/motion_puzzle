@@ -7,11 +7,11 @@ from trainer import Trainer
 sys.path.append('./motion')
 sys.path.append('./etc')
 sys.path.append('./preprocess')
-from Quaternions import Quaternions
-import Animation as Animation
-import BVH as BVH
-from remove_fs import remove_foot_sliding
-from utils import ensure_dirs, get_config
+from motion.Quaternions import Quaternions
+import motion.Animation as Animation
+import motion.BVH as BVH
+from motion.remove_fs import remove_foot_sliding
+from etc.utils import ensure_dirs, get_config
 from generate_dataset import process_data
 from output2bvh import compute_posture
 
@@ -125,10 +125,10 @@ def main():
         con_gt = outputs["con_gt"].squeeze()
         sty_gt = outputs["sty_gt"].squeeze()
 
-        rec = rec.numpy()*std + mean
-        tra = tra.numpy()*std + mean
-        con_gt = con_gt.numpy()*std + mean
-        sty_gt = sty_gt.numpy()*std + mean
+        rec = rec.detach().cpu().numpy()*std + mean
+        tra = tra.detach().cpu().numpy()*std + mean
+        con_gt = con_gt.detach().cpu().numpy()*std + mean
+        sty_gt = sty_gt.detach().cpu().numpy()*std + mean
 
         tra_root = cnt_root
 

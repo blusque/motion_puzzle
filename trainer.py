@@ -6,12 +6,11 @@ from tqdm import tqdm
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-sys.path.append('./etc')
-from utils import get_model_list
+from etc.utils import get_model_list
 logger = logging.getLogger(__name__)
 
 from model import (Generator)
-from radam import RAdam
+from etc.radam import RAdam
 
 
 class Trainer(nn.Module):
@@ -30,9 +29,11 @@ class Trainer(nn.Module):
 
         self.device = 'cpu'
         if torch.cuda.is_available():
-            self.device = torch.cuda.current_device()
-            self.gen = nn.DataParallel(self.gen).to(self.device)
-            self.gen_ema = nn.DataParallel(self.gen_ema).to(self.device)
+            self.device = torch.device('cuda')
+            self.gen = self.gen.to(self.device)
+            self.gen_ema = self.gen_ema.to(self.device)
+            # self.gen = nn.DataParallel(self.gen).to(self.device)
+            # self.gen_ema = nn.DataParallel(self.gen_ema).to(self.device)
 
     def train(self, loader, wirter):
         config = self.config

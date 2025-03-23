@@ -37,7 +37,9 @@ set_seed(config['manualSeed'])
 
 """ Dataloader """
 train_src_loader = get_dataloader('train', config)
+print("train_src_loader: ", train_src_loader)
 train_tar_loader = get_dataloader('train', config)
+print("train_tar_loader: ", train_tar_loader)
 loader = {'train_src': train_src_loader, 'train_tar': train_tar_loader}
 
 """ Summary Writer """

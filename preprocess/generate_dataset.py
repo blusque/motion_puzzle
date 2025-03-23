@@ -4,12 +4,12 @@ import numpy as np
 import shutil
 import scipy.ndimage.filters as filters
 
-sys.path.append('../motion')
-sys.path.append('../etc')
-from Pivots import Pivots
-from Quaternions import Quaternions
-import Animation as Animation
-import BVH as BVH
+sys.path.append(os.path.join(os.path.dirname(__file__), '.'))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
+from motion.Pivots import Pivots
+from motion.Quaternions import Quaternions
+import motion.Animation as Animation
+import motion.BVH as BVH
 
 def softmax(x, **kw):
     softness = kw.pop('softness', 1.0)
@@ -143,14 +143,14 @@ def process_data(filename, window=120, window_step=60, divide=True):
     feet_l_z = (global_positions[1:, fid_l, 2] - global_positions[:-1, fid_l, 2])**2
     feet_l_h = global_positions[:-1, fid_l, 1]
     feet_l = (((feet_l_x + feet_l_y + feet_l_z) < velfactor)
-              & (feet_l_h < heightfactor)).astype(np.float)
+              & (feet_l_h < heightfactor)).astype(np.float32)
 
     feet_r_x = (global_positions[1:, fid_r, 0] - global_positions[:-1, fid_r, 0])**2
     feet_r_y = (global_positions[1:, fid_r, 1] - global_positions[:-1, fid_r, 1])**2
     feet_r_z = (global_positions[1:, fid_r, 2] - global_positions[:-1, fid_r, 2])**2
     feet_r_h = global_positions[:-1, fid_r, 1]
     feet_r = (((feet_r_x + feet_r_y + feet_r_z) < velfactor)
-              & (feet_r_h < heightfactor)).astype(np.float)
+              & (feet_r_h < heightfactor)).astype(np.float32)
 
     foot_contacts = np.concatenate([feet_l, feet_r], axis=-1).astype(np.int32)
 
