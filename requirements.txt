@@ -1,5 +1,46 @@
-tensorboard==2.9.0
-scipy==1.8.0
-tqdm==4.64.0
-pyyaml==6.0.0
+absl-py==2.1.0
+Brotli @ file:///croot/brotli-split_1714483155106/work
+cachetools==5.5.2
+certifi @ file:///croot/certifi_1725551672989/work/certifi
+charset-normalizer @ file:///croot/charset-normalizer_1721748349566/work
+cycler==0.12.1
+fonttools==4.56.0
+google-auth==2.38.0
+google-auth-oauthlib==0.4.6
+grpcio==1.70.0
+idna==3.10
+importlib_metadata==8.5.0
+kiwisolver==1.4.7
+Markdown==3.7
+MarkupSafe==2.1.5
 matplotlib==3.5.2
+mkl-fft @ file:///croot/mkl_fft_1695058164594/work
+mkl-random @ file:///croot/mkl_random_1695059800811/work
+mkl-service==2.4.0
+numpy @ file:///work/mkl/numpy_and_numpy_base_1682953417311/work
+oauthlib==3.2.2
+packaging==24.2
+pillow @ file:///croot/pillow_1721059439630/work
+protobuf==3.20.0
+pyasn1==0.6.1
+pyasn1_modules==0.4.1
+pyparsing==3.1.4
+PySocks @ file:///tmp/build/80754af9/pysocks_1605305779399/work
+python-dateutil==2.9.0.post0
+PyYAML==6.0
+requests @ file:///croot/requests_1721410876868/work
+requests-oauthlib==2.0.0
+rsa==4.9
+scipy==1.10.1
+six==1.17.0
+tensorboard==2.9.0
+tensorboard-data-server==0.6.1
+tensorboard-plugin-wit==1.8.1
+torch==1.11.0
+torchaudio==0.11.0
+torchvision==0.12.0
+tqdm==4.64.0
+typing_extensions @ file:///croot/typing_extensions_1715268824938/work
+urllib3 @ file:///croot/urllib3_1727769808118/work
+Werkzeug==3.0.6
+zipp==3.20.2
