@@ -1,10 +1,13 @@
 import sys
 import os
 import numpy as np
-sys.path.append('..')
+sys.path.append('/home/mjd/motion_puzzle/')
+sys.path.append('/home/mjd/motion_puzzle/motion')
+print(sys.path)
 from motion.Quaternions import Quaternions
 from motion.Animation import Animation
 import motion.BVH as BVH
+
 
 def qfix(q):
     """
@@ -21,7 +24,7 @@ def qfix(q):
     result = q.copy()
     dot_products = np.sum(q[1:]*q[:-1], axis=2)
     mask = dot_products < 0
-    mask = (np.cumsum(mask, axis=0)%2).astype(bool)
+    mask = (np.cumsum(mask, axis=0)%2).astype(bool) # Reverse the quaternion if the dot product is negative and the number of reversals so far is odd
     result[1:][mask] *= -1
     return result
 
@@ -31,7 +34,7 @@ def get_files(directory):
             and f.endswith('.bvh') and f != 'rest.bvh']
 
 def main():
-    bvh_dir = '../database/cmu'
+    bvh_dir = '../database/style_tencent'
     bvh_files = get_files(bvh_dir)
 
     for i, item in enumerate(bvh_files):
@@ -47,8 +50,10 @@ def main():
         orients   = anim.orients
         offsets   = anim.offsets
         parents   = anim.parents
-        joints_left = np.array([1, 2, 3, 4, 5, 17, 18, 19, 20, 21, 22, 23], dtype='int64') 
-        joints_right = np.array([6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 29, 30], dtype='int64')
+        joints_left = np.array([6, 7, 8, 9, 14, 15, 16], dtype='int64')
+        # joints_left = np.array([1, 2, 3, 4, 5, 17, 18, 19, 20, 21, 22, 23], dtype='int64') 
+        joints_right = np.array([10, 11, 12, 13, 17, 18, 19], dtype='int64')
+        # joints_right = np.array([6, 7, 8, 9, 10, 24, 25, 26, 27, 28, 29, 30], dtype='int64')
 
         mirrored_rotations = rotations.copy()
         mirrored_positions = positions.copy()

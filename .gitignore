@@ -115,6 +115,7 @@ database/
 # model
 model_ours
 model_ours.zip
+style_tencent
 
 # output
 output

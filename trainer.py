@@ -37,6 +37,7 @@ class Trainer(nn.Module):
 
     def train(self, loader, wirter):
         config = self.config
+        # torch.autograd.set_detect_anomaly(True)
 
         def run_epoch(epoch):
             self.gen.train()
@@ -77,6 +78,9 @@ class Trainer(nn.Module):
 
         xa = xa_data['motion'].to(self.device)
         xb = xb_data['motion'].to(self.device)
+        
+        if torch.isnan(xa).any() or torch.isnan(xb).any():
+            print('Nan in data')
 
         xaa, xbb, xab, xaba, xabb = self.gen(xa, xb)
 

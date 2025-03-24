@@ -80,12 +80,12 @@ def process_data(filename, window=120, window_step=60, divide=True):
     global_xforms = Animation.transforms_global(anim)
 
     """ Remove trash joints """
-    # global_xforms = global_xforms[:, np.array([0,
-    #                                            2,  3,  4,  5,
-    #                                            7,  8,  9, 10,
-    #                                            12, 13, 15, 16,
-    #                                            18, 19, 20, 22,
-    #                                            25, 26, 27, 29])]
+    global_xforms = global_xforms[:, np.array([0,
+                                               2,  3,  4,  5,
+                                               7,  8,  9, 10,
+                                               12, 13, 15, 16,
+                                               18, 19, 20, 22,
+                                               25, 26, 27, 29])]
 
     global_positions = global_xforms[:, :, :3, 3] / global_xforms[:, :, 3:, 3]
     global_rotations = Quaternions.from_transforms(global_xforms)
@@ -93,14 +93,14 @@ def process_data(filename, window=120, window_step=60, divide=True):
     global_ups = global_xforms[:, :, :3, 1]
 
     """ Put on Floor """
-    fid_l, fid_r = np.array([16]), np.array([19])
+    fid_l, fid_r = np.array([3, 4]), np.array([7, 8])
     foot_heights = np.minimum(global_positions[:, fid_l, 1], global_positions[:, fid_r, 1]).min(axis=1)
     floor_height = softmin(foot_heights, softness=0.5, axis=0)
     global_positions[:, :, 1] -= floor_height
     global_xforms[:, :, 1, 3] -= floor_height
 
     """ Extract Forward Direction and smooth """
-    sdr_l, sdr_r, hip_l, hip_r = 6, 11, 14, 17
+    sdr_l, sdr_r, hip_l, hip_r = 13, 17, 1, 5
     across = (
         (global_positions[:, sdr_l] - global_positions[:, sdr_r]) +
         (global_positions[:, hip_l] - global_positions[:, hip_r])
@@ -136,7 +136,7 @@ def process_data(filename, window=120, window_step=60, divide=True):
     root_rvelocity = Pivots.from_quaternions(root_rotation[1:] * -root_rotation[:-1]).ps    # to angle-axis
 
     """ Foot Contacts """
-    fid_l, fid_r = np.array([16]), np.array([19])
+    fid_l, fid_r = np.array([3, 4]), np.array([7, 8])
     velfactor, heightfactor = np.array([0.05, 0.05]), np.array([3.0, 2.0])
     feet_l_x = (global_positions[1:, fid_l, 0] - global_positions[:-1, fid_l, 0])**2
     feet_l_y = (global_positions[1:, fid_l, 1] - global_positions[:-1, fid_l, 1])**2
@@ -214,12 +214,12 @@ def generate_root_mean_std(input, norm_dir):
 
 def main():
     root_path = '../datasets/'
-    dataset_name = 'style_tencent'
+    dataset_name = 'Xia'
     dataset_dir = os.path.join(root_path, dataset_name)
     os.makedirs(dataset_dir, exist_ok=True)
     print("Create folder ", dataset_dir)
 
-    bvh_dir = '../database/style_tencent'
+    bvh_dir = '../database/Xia'
     bvh_files = np.array(get_files(bvh_dir), dtype=np.str_)
 
     total_len = len(bvh_files)
@@ -227,7 +227,7 @@ def main():
     test_bvh_files = bvh_files[test_idx]
     test_filename = [x.split('/')[-1] for x in test_bvh_files]
 
-    m_bvh_dir = '../database/style_tencent_m'
+    m_bvh_dir = '../database/Xia_m'
     m_bvh_files = np.array(get_files(m_bvh_dir), dtype=np.str_)
     bvh_files = np.concatenate([bvh_files, m_bvh_files], axis=0)
     np.random.shuffle(bvh_files)
@@ -255,20 +255,14 @@ def main():
     train_dataset_path = os.path.join(dataset_dir, 'train_dataset.npz')
     np.savez_compressed(train_dataset_path, motion=train_motions, 
                                             root=train_roots, 
-                                            foot_contact=train_foot_contacts, dtype=object)
+                                            foot_contact=train_foot_contacts)
     print('Save train dataset')
 
     # collect test dataset
     test_dataset_path = os.path.join(dataset_dir, 'test_dataset.npz')
-    # print(len(test_motions), len(test_roots), len(test_foot_contacts))
-    # for i in range(len(test_motions)):
-    #     print(test_motions[i].shape, test_roots[i].shape, test_foot_contacts[i].shape)
-    test_motions = np.asanyarray(test_motions, dtype=object)
-    test_roots = np.asanyarray(test_roots, dtype=object)
-    test_foot_contacts = np.asanyarray(test_foot_contacts, dtype=object)
     np.savez_compressed(test_dataset_path, motion=test_motions, 
-                                            root=test_roots, 
-                                            foot_contact=test_foot_contacts)
+                                           root=test_roots, 
+                                           foot_contact=test_foot_contacts)
 
     test_bvh_dir = os.path.join(dataset_dir, 'test_bvh')
     if not os.path.exists(test_bvh_dir):

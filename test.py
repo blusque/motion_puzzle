@@ -18,15 +18,9 @@ from output2bvh import compute_posture
 
 device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-chosen_joints = np.array([
-    0,
-    2,  3,  4,  5,
-    7,  8,  9, 10,
-    12, 13, 15, 16,
-    18, 19, 20, 22,
-    25, 26, 27, 29])
+chosen_joints = np.array([0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19])
 
-parents = np.array([-1, 0, 1, 2, 3, 0, 5, 6, 7, 0, 9, 10, 11, 10, 13, 14, 15, 10, 17, 18, 19])
+parents = np.array([-1, 0, 1, 2, 3, 4, 3, 6, 7, 8, 3, 10, 11, 12, 0, 14, 15, 0, 17, 18])
 
 def initialize_path(config):
     config['main_dir'] = os.path.join('.', config['name'])

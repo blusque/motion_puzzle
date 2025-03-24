@@ -29,6 +29,20 @@ class Graph_Joint():
             neighbor_link = neighbor_link[1:]   # remove (0, -1)
             self.edge = self_link + neighbor_link
             self.center = 0
+        elif layout == 'basketball':
+            self.num_node = 20
+            self_link = [(i, i) for i in range(self.num_node)]
+            parents = [-1,                           # Hip
+                       0, 1, 2, 3, 4,               # Spine
+                       3, 6, 7, 8,                  # Left Arm
+                       3, 10, 11, 12,               # Right Arm
+                       0, 14, 15,                   # Left Leg
+                       0, 17, 18]                   # Right Leg
+            neighbor_link = [(i, parents[i]) for i in range(len(parents))]
+            neighbor_link = neighbor_link[1:]   # remove (0, -1)
+            self.edge = self_link + neighbor_link
+            self.center = 0
+
 
     def get_adjacency(self, strategy):
         valid_hop = range(0, self.max_hop + 1, self.dilation)
@@ -94,6 +108,18 @@ class Graph_Mid():
                              (0,1), (2,3), (6,7), (8,9)]
             self.edge = self_link + neighbor_link
             self.center = 4
+        elif layout == 'basketball':
+            self.num_node = 10
+            self_link = [(i, i) for i in range(self.num_node)]
+            # LeftHip = 0, LeftLeg = 1
+            # RightHip = 2, RightLeg = 3
+            # Back = 4, Neck = 5
+            # LeftShoulder = 6, LeftArm = 7
+            # RightShoulder = 8, RightArm = 9
+            neighbor_link = [(4,0), (4,2), (4,5), (4,6), (4,8),
+                             (0,1), (2,3), (6,7), (8,9)]
+            self.edge = self_link + neighbor_link
+            self.center = 4
 
     def get_adjacency(self, strategy):
         valid_hop = range(0, self.max_hop + 1, self.dilation)
@@ -148,6 +174,17 @@ class Graph_Bodypart():
 
     def get_edge(self, layout):        
         if layout=='cmu':
+            self.num_node = 5
+            self_link = [(i, i) for i in range(self.num_node)]
+            # Left Leg  -> 0
+            # Right Leg -> 1
+            # Spine     -> 2
+            # Left Arm  -> 3
+            # Right Arm -> 4
+            neighbor_link = [(0,2), (1,2), (3,2), (4,2)]
+            self.edge = self_link + neighbor_link
+            self.center = 2
+        elif layout=='basketball':
             self.num_node = 5
             self_link = [(i, i) for i in range(self.num_node)]
             # Left Leg  -> 0
@@ -238,18 +275,18 @@ def normalize_undigraph(A):
 class PoolJointToMid(nn.Module):
     def __init__(self):
         super().__init__()      # kernel=3, stride=2 forward kinematics chain Pooling
-        self.LeftHip = [0, 1, 2]
-        self.LeftLeg = [2, 3, 4]
-        self.RightHip = [0, 5, 6]
-        self.RightLeg = [6, 7, 8]
-        self.Back = [0, 9, 10]
-        self.Neck = [10, 11, 12]
-        self.LeftShoulder = [10, 13, 14]
-        self.LeftArm = [14, 15, 16]
-        self.RightShoulder = [10, 17, 18]
-        self.RightArm = [18, 19, 20]
+        self.LeftHip = [0, 14, 15]
+        self.LeftLeg = [14, 15, 16]
+        self.RightHip = [0, 16, 17]
+        self.RightLeg = [17, 18, 19]
+        self.Back = [0, 2, 3]
+        self.Neck = [3, 4, 5]
+        self.LeftShoulder = [3, 6, 7]
+        self.LeftArm = [7, 8, 9]
+        self.RightShoulder = [3, 10, 11]
+        self.RightArm = [11, 12, 13]
 
-        njoints = 21
+        njoints = 20
         nmid = 10
         weight = torch.zeros(njoints, nmid, dtype=torch.float32, requires_grad=False)
         weight[self.LeftHip, 0] = 1.0
@@ -329,19 +366,19 @@ class UnpoolBodypartToMid(nn.Module):
 class UnpoolMidToJoint(nn.Module):
     def __init__(self):
         super().__init__()
-        self.LeftHip = [0, 1, 2]
-        self.LeftLeg = [2, 3, 4]
-        self.RightHip = [0, 5, 6]
-        self.RightLeg = [6, 7, 8]
-        self.Back = [0, 9, 10]
-        self.Neck = [10, 11, 12]
-        self.LeftShoulder = [10, 13, 14]
-        self.LeftArm = [14, 15, 16]
-        self.RightShoulder = [10, 17, 18]
-        self.RightArm = [18, 19, 20]
+        self.LeftHip = [0, 14, 15]
+        self.LeftLeg = [14, 15, 16]
+        self.RightHip = [0, 16, 17]
+        self.RightLeg = [17, 18, 19]
+        self.Back = [0, 1, 2, 3]
+        self.Neck = [3, 4, 5]
+        self.LeftShoulder = [3, 6, 7]
+        self.LeftArm = [7, 8, 9]
+        self.RightShoulder = [3, 10, 11]
+        self.RightArm = [11, 12, 13]
 
         nmid = 10
-        njoints = 21
+        njoints = 20
         weight = torch.zeros(nmid, njoints, dtype=torch.float32, requires_grad=False)
         weight[0, self.LeftHip] = 1.0
         weight[1, self.LeftLeg] = 1.0
@@ -355,6 +392,7 @@ class UnpoolMidToJoint(nn.Module):
         weight[9, self.RightArm] = 1.0
 
         scale = torch.sum(weight, axis=0, keepdim=True)
+        # print(scale)
         weight = weight / scale
         self.register_buffer('weight', weight)
         
@@ -364,7 +402,7 @@ class UnpoolMidToJoint(nn.Module):
 
 
 if __name__ == '__main__':
-    x_in = torch.randn(16, 15, 120, 21)
+    x_in = torch.randn(16, 15, 120, 20)
     pool_test = PoolJointToMid()
 
     print(PoolJointToMid()(x_in).shape)

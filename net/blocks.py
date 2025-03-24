@@ -74,12 +74,12 @@ class BPStyleNet(nn.Module):
                       s_leftarm, s_rightarm, 
                       A):
         
-        if A.shape[-1] == 21:      # G1 level
-            idx_leftleg = [1, 2, 3, 4]
-            idx_rightleg = [5, 6, 7, 8]
-            idx_spine = [0, 9, 10, 11, 12]
-            idx_leftarm = [13, 14, 15, 16]
-            idx_rightarm = [17, 18, 19, 20]
+        if A.shape[-1] == 20:      # G1 level
+            idx_leftleg = [14, 15, 16]
+            idx_rightleg = [17, 18, 19]
+            idx_spine = [0, 1, 2, 3, 4, 5]
+            idx_leftarm = [6, 7, 8, 9]
+            idx_rightarm = [10, 11, 12, 13]
 
         elif A.shape[-1] == 10:    # G2 level
             idx_leftleg = [0, 1]
@@ -96,7 +96,7 @@ class BPStyleNet(nn.Module):
             idx_rightarm = [4]
 
         else:
-            assert A.shape[-1] == 21 or 10 or 5, "Graph is wrong!!"
+            assert A.shape[-1] == 20 or 10 or 5, "Graph is wrong!!"
 
         x_leftleg = x[..., idx_leftleg]
         s_leftleg = s_leftleg[..., idx_leftleg]

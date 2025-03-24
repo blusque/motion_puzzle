@@ -29,10 +29,18 @@ class Generator(nn.Module):
     
     def forward(self, xa, xb, phase='train'):       # x:  (N, C, V, T)
         # encode
-        c_xa = self.enc_content(xa)     # [(n, c, 21, 4t), ..., (n, 4c, 5, t)] 
+        c_xa = self.enc_content(xa)     # [(n, c, 21, 4t), ..., (n, 4c, 5, t)]
+        if torch.isnan(c_xa[-1]).any():
+            print('c_xa[-1] has nan')
         c_xb = self.enc_content(xb)
+        if torch.isnan(c_xb[-1]).any():
+            print('c_xb[-1] has nan')
         s_xa = self.enc_style(xa)   
+        if torch.isnan(s_xa[-1]).any():
+            print('s_xa[-1] has nan')
         s_xb = self.enc_style(xb)
+        if torch.isnan(s_xb[-1]).any():
+            print('s_xb[-1] has nan')
 
         # style mixing
         mixing_prob = 0.4 if phase == 'train' else 0.0
@@ -40,11 +48,21 @@ class Generator(nn.Module):
 
         # decode
         xab = self.dec(c_xa[-1], s_mix[0][::-1], s_mix[1][::-1], s_mix[2][::-1], s_mix[3][::-1], s_mix[4][::-1])
+        if torch.isnan(xab).any():
+            print('xab has nan')
         xaa = self.dec(c_xa[-1], s_xa[::-1], s_xa[::-1], s_xa[::-1], s_xa[::-1], s_xa[::-1])  # reconstruction
+        if torch.isnan(xaa).any():
+            print('xaa has nan')
         xbb = self.dec(c_xb[-1], s_xb[::-1], s_xb[::-1], s_xb[::-1], s_xb[::-1], s_xb[::-1])  # reconstruction
+        if torch.isnan(xbb).any():
+            print('xbb has nan')
 
         c_xab = self.enc_content(xab)
+        if c_xab[-1].isnan().any():
+            print('c_xab[-1] has nan')
         xaba = self.dec(c_xab[-1], s_xa[::-1], s_xa[::-1], s_xa[::-1], s_xa[::-1], s_xa[::-1])
+        if torch.isnan(xaba).any():
+            print('xaba has nan')
         if len(bdy_part_select) == 0:
             s_xab = self.enc_style(xab)        
             xabb = self.dec(c_xb[-1], s_xab[::-1], s_xab[::-1], s_xab[::-1], s_xab[::-1], s_xab[::-1])
@@ -375,12 +393,14 @@ class Decoder(nn.Module):
             x: (n, c, t, v)
             sty_features: [(n, 4c, 5, t), ..., (n, c, 21, 4t)] 
         """
+        assert torch.isnan(x).any() == False
         # bottleneck
         x = self.bottleneck(x, 
                             sty_leftleg[0], sty_rightleg[0], 
                             sty_spine[0], 
                             sty_leftarm[0], sty_rightarm[0],
                             self.A_b * self.edge_importance_bt)
+        assert torch.isnan(x).any() == False
         
         # G3
         x = self.bodypart(x, 
@@ -388,7 +408,7 @@ class Decoder(nn.Module):
                           sty_spine[1], 
                           sty_leftarm[1], sty_rightarm[1], 
                           self.A_b * self.edge_importance_b)
-        
+        assert torch.isnan(x).any() == False
         # G2
         x = self.up_BodypartToMid(x)
         x = self.up_temp1(x, scale_factor=(2, 1), mode='nearest')
@@ -397,18 +417,22 @@ class Decoder(nn.Module):
                      sty_spine[2], 
                      sty_leftarm[2], sty_rightarm[2], 
                      self.A_m * self.edge_importance_m)
-        
+        assert torch.isnan(x).any() == False
         # G1
         x = self.up_MidToJoint(x)
+        assert torch.isnan(x).any() == False
         x = self.up_temp2(x, scale_factor=(2, 1), mode='nearest')
+        assert torch.isnan(x).any() == False
         x = self.joint(x, 
                        sty_leftleg[3], sty_rightleg[3], 
                        sty_spine[3], 
                        sty_leftarm[3], sty_rightarm[3], 
                        self.A_j * self.edge_importance_j)
 
+        assert torch.isnan(x).any() == False
         # to mot
         x = self.to_mot(x)
+        assert torch.isnan(x).any() == False
         
         return x.permute(0, 1, 3, 2).contiguous()   # (N, C, V, T)
     
